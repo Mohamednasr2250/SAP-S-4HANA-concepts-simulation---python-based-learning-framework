@@ -2,10 +2,7 @@
 REPORT zday2_internal_tables.
 
 TYPES: BEGIN OF ty_customer,
-         kunnr TYPE kunnr,   
-         name1 TYPE name1,    
-         land1 TYPE land1,  
-         netwr TYPE netwr,    
+         kunnr TYPE kunnr,   name1 TYPE name1,   land1 TYPE land1,    netwr TYPE netwr,    
        END OF ty_customer.
 
 DATA: lt_customers TYPE TABLE OF ty_customer,  
@@ -17,15 +14,15 @@ DATA: lt_kna1 TYPE TABLE OF kna1,
 SELECT kunnr name1 land1
   FROM kna1
   INTO TABLE @lt_customers       
-  WHERE land1 = 'EG'
+  WHERE land1 = 'eg'
   ORDER BY name1.
 
 IF sy-subrc <> 0.
-  WRITE: / 'No customers found for Egypt'.
+  WRITE: / 'no customers found in egypt'.
   RETURN.
 ENDIF.
 
-WRITE: / 'Customers found:', lines( lt_customers ). 
+WRITE: / 'customers found:', lines( lt_customers ). 
 
 LOOP AT lt_customers INTO ls_customer.
 
@@ -36,36 +33,36 @@ ENDLOOP.
 
 
 CLEAR ls_customer.                 
-ls_customer-kunnr = 'C999'.
-ls_customer-name1 = 'Test Customer'.
-ls_customer-land1 = 'EG'.
+ls_customer-kunnr = 'c999'.
+ls_customer-name1 = 'test customer'.
+ls_customer-land1 = 'eg'.
 APPEND ls_customer TO lt_customers. 
 
-WRITE: / 'After append:', lines( lt_customers ), 'rows'.
+WRITE: / 'after append:', lines( lt_customers ),'rows'.
 
 
 READ TABLE lt_customers INTO ls_customer
-  WITH KEY kunnr = 'C001'.
+  WITH KEY kunnr = 'c001'.
 
 IF sy-subrc = 0.
-  WRITE: / 'Found:', ls_customer-name1.
+  WRITE: / 'found:', ls_customer-name1.
 ELSE.
-  WRITE: / 'Not found'.
+  WRITE: / 'not found'.
 ENDIF.
 
 READ TABLE lt_customers INTO ls_customer
-  WITH KEY kunnr = 'C001'.
+  WITH KEY kunnr = 'c001'.
 IF sy-subrc = 0.
-  ls_customer-name1 = 'Updated Name'.
+  ls_customer-name1 = 'updated name'.
   MODIFY lt_customers FROM ls_customer
     TRANSPORTING name1              
-    WHERE kunnr = 'C001'.
+    WHERE kunnr = 'c001'.
 ENDIF.
 
 
-DELETE lt_customers WHERE land1 = 'AE'.
+DELETE lt_customers WHERE land1 = 'ae'.
 
-WRITE: / 'After delete:', lines( lt_customers ), 'rows remain'.
+WRITE: / 'after delete:', lines( lt_customers ),'rows remain'.
 
 
 SORT lt_customers BY name1 ASCENDING.
@@ -79,5 +76,5 @@ SELECT SINGLE kunnr name1
   WHERE kunnr = '0000001001'.
 
 IF sy-subrc = 0.
-  WRITE: / 'Single result:', ls_one-name1.
+  WRITE: / 'single result:', ls_one-name1.
 ENDIF.
