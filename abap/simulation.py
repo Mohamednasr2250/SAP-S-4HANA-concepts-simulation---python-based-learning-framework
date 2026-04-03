@@ -5,35 +5,25 @@ from typing import List, Optional
 
 
 RAW_DB = {
-    "KNA1": [  
-        {"KUNNR": "C001", "NAME1": "Ahmed Trading",    "LAND1": "EG", "KUNNR_GROUP": "A"},
-        {"KUNNR": "C002", "NAME1": "Sara Exports",     "LAND1": "EG", "KUNNR_GROUP": "B"},
-        {"KUNNR": "C003", "NAME1": "Nile Corp",        "LAND1": "EG", "KUNNR_GROUP": "A"},
-        {"KUNNR": "C004", "NAME1": "Gulf Traders",     "LAND1": "AE", "KUNNR_GROUP": "A"},
-        {"KUNNR": "C005", "NAME1": "Beirut Supplies",  "LAND1": "LB", "KUNNR_GROUP": "B"},
+    "kna1": [  
+        {"kunnr": "c001", "name1": "ahmed trading",    "land1": "eg", "kunnr_group": "a"},
+        {"kunnr": "c002", "name1": "Sara exports",     "land1": "eg", "kunnr_group": "b"},
+        {"kunnr": "c003", "name1": "nile corp",        "land1": "eg", "kunnr_group": "a"},
+        {"kunnr": "c004", "name1": "gulf traders",     "land1": "ae", "kunnr_group": "a"},
+        {"kunnr": "c005", "name1": "beirut supplies",  "land1": "lb", "kunnr_group": "b"},
     ],
-    "VBAK": [  
-        {"VBELN": "4500000001", "KUNNR": "C001", "NETWR": 125000, "WAERK": "USD"},
-        {"VBELN": "4500000002", "KUNNR": "C001", "NETWR":  87500, "WAERK": "USD"},
-        {"VBELN": "4500000003", "KUNNR": "C002", "NETWR":  45000, "WAERK": "USD"},
-        {"VBELN": "4500000004", "KUNNR": "C003", "NETWR": 200000, "WAERK": "USD"},
-        {"VBELN": "4500000005", "KUNNR": "C004", "NETWR":  33000, "WAERK": "USD"},
+    "vbak": [  
+        {"vbeln": "4500000001", "kunnr": "c001", "netwr": 125000, "waerk": "usd"},
+        {"vbeln": "4500000002", "kunnr": "c001", "netwr":  87500, "waerk": "usd"},
+        {"vbeln": "4500000003", "kunnr": "c002", "netwr":  45000, "waerk": "usd"},
+        {"vbeln": "4500000004", "kunnr": "c003", "netwr": 200000, "waerk": "usd"},
+        {"vbeln": "4500000005", "kunnr": "c004", "netwr":  33000, "waerk": "usd"},
     ],
 }
 
 
 def abap_select(fields, from_table, where=None, single=False, order_by=None):
-    """
-    Simulates ABAP SELECT statement.
-
-    ABAP:
-      SELECT kunnr name1 land1
-        FROM kna1
-        INTO TABLE @lt_customers
-        WHERE land1 = 'EG'.
-
-    Python equivalent below:
-    """
+  
     rows = RAW_DB.get(from_table, [])
 
     if where:
@@ -66,37 +56,37 @@ def abap_delete_where(lt_table, field, value):
     
     before = len(lt_table)
     lt_table = [r for r in lt_table if r.get(field) != value]
-    print(f"  [DELETE WHERE {field}={value}] Removed {before - len(lt_table)} row(s)")
+    print(f"  [delete where {field}={value}] removed {before - len(lt_table)} row(s)")
     return lt_table
 
-
+##
 def program_1_basic_loop():
     print("\n" + "═"*55)
-    print("PROGRAM 1: SELECT all Egyptian customers + LOOP AT")
+    print("program 1: select all egyptian customers and loop at")
     print("═"*55)
 
   
     lt_customers, sy_subrc = abap_select(
-        fields="KUNNR, NAME1, LAND1",
-        from_table="KNA1",
-        where={"LAND1": "EG"}
+        fields="kunnr, name1, land1",
+        from_table="kna1",
+        where={"land1": "eg"}
     )
 
     if sy_subrc == 0:
-        print(f"  SELECT succeeded. {len(lt_customers)} row(s) found.\n")
+        print(f"  select done {len(lt_customers)} row(s) found.\n")
     else:
-        print("  No data found. sy-subrc = 4")
+        print("  no data here sy-subrc = 4")
         return
 
   
     for ls_customer in lt_customers:        
-        cust_id   = ls_customer["KUNNR"]  
-        cust_name = ls_customer["NAME1"]   
-        country   = ls_customer["LAND1"]  
+        cust_id   = ls_customer["kunnr"]  
+        cust_name = ls_customer["name1"]   
+        country   = ls_customer["land1"]  
         print(f"  {cust_id} | {cust_name:<20} | {country}")
 
 
-
+#
 
 def program_2_select_single():
     print("\n" + "═"*55)
@@ -202,3 +192,4 @@ if __name__ == "__main__":
     print("All programs complete. You now understand ABAP's")
     print("core data pattern: SELECT → LOOP → Process → Output")
     print("═"*55)
+    #
