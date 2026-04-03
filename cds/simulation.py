@@ -64,8 +64,8 @@ class Z_Emp_Composite:
 
     def _status_text(self, status_code):
      
-        mapping = {"A": "Active", "I": "Inactive", "T": "Terminated"}
-        return mapping.get(status_code, "Unknown")
+        mapping = {"A": "active", "I": "inactive", "T": "terminated"}
+        return mapping.get(status_code, "unknown")
 
     def select(self, where=None, include_dept=False):
         employees = self._emp_view.select(where=where)
@@ -73,21 +73,21 @@ class Z_Emp_Composite:
 
         for emp in employees:
             row = {
-                "EMP_ID":      emp["EMP_ID"],
-                "FIRST_NM":    emp["FIRST_NM"],
-                "LAST_NM":     emp["LAST_NM"],
-                "FULL_NAME":   f"{emp['FIRST_NM']} {emp['LAST_NM']}",
-                "DEPT_ID":     emp["DEPT_ID"],
-                "SALARY":      emp["SALARY"],
-                "HIRE_DATE":   emp["HIRE_DATE"],
-                "STATUS_TEXT": self._status_text(emp["STATUS"]),
+                "emp_id":      emp["emp_id"],
+                "first_name":    emp["first_name"],
+                "last_name":     emp["last_name"],
+                "full_name":   f"{emp['first_name']} {emp['last_name']}",
+                "dept_id":     emp["dept_id"],
+                "salary":      emp["salary"],
+                "hire_date":   emp["hire_date"],
+                "stat_txt": self._status_text(emp["status"]),
             }
 
             if include_dept:
-                dept = self._resolve_association(emp["DEPT_ID"])
+                dept = self._resolve_association(emp["dept_id"])
                 if dept:
-                    row["DEPT_NAME"]    = dept["DEPT_NAME"]
-                    row["COST_CENTER"]  = dept["COST_CENTER"]
+                    row["dept_name"]    = dept["dept_name"]
+                    row["cost_center"]  = dept["cost_center"]
 
             result.append(row)
 
@@ -117,7 +117,7 @@ class Z_Emp_Consumption:
         self._composite = Z_Emp_Composite()
 
     def get_list(self, filters=None):
-        """Simulates Fiori list view reading from OData"""
+        
         return self._composite.select(where=filters, include_dept=True)
 
     def get_odata_endpoint(self):
@@ -127,7 +127,7 @@ class Z_Emp_Consumption:
 
 def run_layer1():
     print("\n" + "═"*55)
-    print("LAYER 1: Basic View — raw table data")
+    print("layer 1: basic view — raw table data")
     print("═"*55)
     view = Z_Emp_Basic()
     rows = view.select()
@@ -137,7 +137,7 @@ def run_layer1():
 
 def run_layer2():
     print("\n" + "═"*55)
-    print("LAYER 2: Composite View — joins + calculations")
+    print("layer 2: composite view — joins+calculations")
     print("═"*55)
     view = Z_Emp_Composite()
     rows = view.select(include_dept=True)
@@ -148,16 +148,16 @@ def run_layer2():
 
 def run_layer3_fiori():
     print("\n" + "═"*55)
-    print("LAYER 3: Consumption View — what Fiori sees via OData")
+    print("layer 3: consumption view — what Fiori sees via OData")
     print("═"*55)
     view = Z_Emp_Consumption()
 
-    print(f"  OData endpoint: {view.get_odata_endpoint()}")
-    print(f"\n  Annotations active:")
+    print(f"  oData endpoint: {view.get_odata_endpoint()}")
+    print(f"\n  annotations active:")
     for k, v in view.ANNOTATIONS.items():
         print(f"    {k}: {v}")
 
-    print(f"\n  Fiori List — Active employees only:")
+    print(f"\n  fiori list — active employees only:")
     rows = view.get_list(filters={"STATUS": "A"})
     print(f"  {'ID':<6} {'Full Name':<20} {'Dept':<14} {'Status':<10} {'Salary':>10}")
     print(f"  {'-'*62}")
@@ -169,15 +169,15 @@ def run_layer3_fiori():
 
 def run_association_demo():
     print("\n" + "═"*55)
-    print("ASSOCIATION DEMO — lazy vs eager fetch")
+    print("association dmeo,lazy vs eager fetch")
     print("═"*55)
-    print("  Without _dept navigation (no JOIN needed):")
+    print("  without _dept navigation,no JOIN need:")
     view = Z_Emp_Composite()
     rows = view.select(include_dept=False)
     for r in rows:
         print(f"    {r['EMP_ID']} | {r['FULL_NAME']:<18} | dept_id={r['DEPT_ID']}")
 
-    print("\n  With _dept navigation (JOIN executes now):")
+    print("\n  with _dept navigation (JOIN execute now):")
     rows = view.select(include_dept=True)
     for r in rows:
         print(f"    {r['EMP_ID']} | {r['FULL_NAME']:<18} | "
@@ -185,13 +185,13 @@ def run_association_demo():
 
 
 if __name__ == "__main__":
-    print("DAY 3 — CDS VIEWS SIMULATION")
+    print("CDS views simulation")
     print("VDM: Basic → Composite → Consumption")
     run_layer1()
     run_layer2()
     run_layer3_fiori()
     run_association_demo()
     print("\n" + "═"*55)
-    print("You now understand CDS layering, associations,")
-    print("annotations, and how Fiori consumes CDS views.")
+    print("CDS layering, associations,")
+    print("annotations,and how Fiori consumes CDS views")
     print("═"*55)
