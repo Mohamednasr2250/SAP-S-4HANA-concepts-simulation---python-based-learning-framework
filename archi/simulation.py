@@ -1,25 +1,19 @@
 
 
 
-class HANADatabase:
+class HANAdatabase:
 
     
-
     def __init__(self):
         self.tables = {
-            "KNA1": [], "VBAK": [], "VBAP": [],   
+            "kna1": [], "vbak": [], "vbap": [],   
         }
-
-
 
     def insert(self, table, record):
         self.tables[table].append(record)
-        print(f"  [HANA] Persisted to {table}: {record}")
-
-
+        print(f"HANA: Persisted to {table}: {record}")
 
     def select(self, table, where_key=None, where_val=None):
-      
       rows = self.tables[table]
       if where_key:
           rows = [r for r in rows if r.get(where_key) == where_val]
@@ -36,47 +30,46 @@ class ABAPApplicationServer:
         self.db = database
 
     def create_customer(self, customer_id, name, country):
-        # Simulate ABAP validation logic
-        print(f"\n[ABAP] Validating customer data...")
-        
+       
+        print(f"\n ABAP: validating customer data")
         if not customer_id or not name:
-            raise ValueError("Customer ID and name are required")
+            raise ValueError("customer id,name required")
         if len(customer_id) > 10:
-            raise ValueError("Customer ID max 10 chars (SAP rule)")
+            raise ValueError("customer id 10 chars max")
 
         record = {
-            "KUNNR": customer_id, "NAME1": name,     "LAND1": country,       
+            "kunnr": customer_id, "name1": name,     "land1": country,       
         }
         
-        self.db.insert("KNA1", record)
-        print(f"[ABAP] Customer {customer_id} created successfully.")
+        self.db.insert("kna1", record)
+        print(f"ABAP: customer {customer_id} done,created successfully")
+        
         return record
 
+
+
     def create_sales_order(self, order_id, customer_id, items):
-        print(f"\n[ABAP] Processing sales order {order_id}...")
+        print(f"\n ABAP: proces sales order{order_id}")
 
       
-        customers = self.db.select("KNA1", "KUNNR", customer_id)
+        customers = self.db.select("kna1", "kunner", customer_id)
         if not customers:
-            raise ValueError(f"Customer {customer_id} not found in KNA1")
+            raise ValueError(f"customer{customer_id}not found in kna1")
 
-        total = sum(item["price"] * item["qty"] for item in items)
+        total=sum(item["price"]*item["qty"] for item in items)
 
-       
-    
-        header = {"VBELN": order_id, "KUNNR": customer_id, "NETWR": total}
-        self.db.insert("VBAK", header)
+        header= {"vbeln":order_id,"kunner":customer_id,"netwr":total}
+        self.db.insert("vbak",header)
 
-       
         for i, item in enumerate(items, 1):
             row = {
-                "VBELN": order_id,"POSNR": str(i * 10).zfill(6),  "MATNR": item["material"],  "KWMENG": item["qty"],"NETPR": item["price"],
+                "vbeln": order_id,"posnr": str(i * 10).zfill(6),  "matnr": item["material"],  "kwmeng": item["qty"],"netpr": item["price"],
             }
-            self.db.insert("VBAP", row)
+            self.db.insert("vbap", row)
 
-        print(f"[ABAP] Order {order_id} total: ${total:,.2f}")
+        print(f"ABAP: order {order_id} total:${total:,.2f}")
+        
         return order_id
-
 
 
 
@@ -88,32 +81,32 @@ class FioriUI:
 
     def user_creates_customer(self, cust_id, name, country):
         print(f"\n{'='*50}")
-        print(f"[FIORI] User submitted: New Customer Form")
-        print(f"  Customer ID : {cust_id}")
-        print(f"  Name        : {name}")
-        print(f"  Country     : {country}")
+        print(f"FIORI: user subm: new Customer")
+        print(f"   id : {cust_id}")
+        print(f"  name        : {name}")
+        print(f"  country     : {country}")
         self.abap.create_customer(cust_id, name, country)
 
     def user_creates_order(self, order_id, cust_id, items):
         print(f"\n{'='*50}")
-        print(f"[FIORI] User submitted: New Sales Order Form")
+        print(f"FIORI: user subm: new sales order")
         self.abap.create_sales_order(order_id, cust_id, items)
 
     def user_views_orders(self, customer_id):
         print(f"\n{'='*50}")
-        print(f"[FIORI] Displaying orders for customer {customer_id}:")
-        orders = self.abap.db.select("VBAK", "KUNNR", customer_id)
+        print(f"FIORI: displaying orders for customer {customer_id}:")
+        orders = self.abap.db.select("vbak", "kunnr", customer_id)
         for i in orders:
-            print(f"  Order: {i['VBELN']} | Total: ${i['NETWR']:,.2f}")
+            print(f"  Order: {i['vbeln']} | total: ${i['netwr']:,.2f}")
 
 
 
-
+#
 if __name__ == "__main__":
     print("SAP 3-TIER ARCHITECTURE SIMULATION")
     print("Initializing system...\n")
 
-    hana   = HANADatabase()
+    hana   = HANAdatabase()
     abap   = ABAPApplicationServer(hana)
     fiori  = FioriUI(abap)
 
@@ -129,11 +122,11 @@ if __name__ == "__main__":
         ]
     )
 
-
-    fiori.user_views_orders("C001")
+#
+    fiori.user_views_orders("c001")
 
     print(f"\n{'='*50}")
-    print("Simulation complete. All data persisted in HANA.")
+    print("simulation done,all data persisted in HANA")
 
 
 
